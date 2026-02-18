@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You 💜</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background 1s ease;
+}
+
+.container {
+    text-align: center;
+    width: 360px;
+}
+
+img {
+    width: 100%;
+    border-radius: 20px;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    margin: 10px;
+    cursor: pointer;
+}
+
+/* THEMES */
+.bts { background: radial-gradient(circle, #6a0dad, #2b003f); color: white; }
+.chaos { background: linear-gradient(135deg, #ff006e, #8338ec); color: white; }
+.romantic { background: linear-gradient(135deg, #ffcad4, #bde0fe); color: #333; }
+
+.romantic button { background: #333; color: white; }
+
+/* CONFETTI */
+.confetti {
+    position: fixed;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    animation: fall 3s linear infinite;
+    opacity: 0.9;
+    z-index: 999;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+    }
+}
+</style>
+</head>
+
+<body class="bts" id="body">
+
+<audio id="song1" loop>
+  <source src="files/song1.mp3">
+</audio>
+<audio id="song2" loop>
+  <source src="files/song2.mp3">
+</audio>
+
+<div class="container">
+    <h2 id="title"></h2>
+    <p id="text"></p>
+    <img id="image">
+
+    <div>
+        <button onclick="prev()" id="backBtn">Back</button>
+        <button onclick="next()" id="nextBtn">Next</button>
+    </div>
+
+    <button onclick="startMusic()" id="musicBtn">🔊 jaan ye pehle dabao</button>
+</div>
+
+<script>
+let index = -1;   // 👈 ONLY CHANGE: start from front page
+let musicStarted = false;
+
+const pages = [
+    // BTS
+    {theme:"bts", img:"files/bts1.jpg", title:"💜 BTS ERA 💜", text:"This was inevitable."},
+    {theme:"bts", img:"files/bts2.jpg", title:"", text:"Purple suits you."},
+    {theme:"bts", img:"files/bts3.jpg", title:"", text:"Main character energy."},
+    {theme:"bts", img:"files/bts4.jpg", title:"", text:"ARMY coded, forever."},
+    {theme:"bts", img:"files/bts5.jpg", title:"", text:"No explanation needed."},
+
+    // CHAOS
+    {theme:"chaos", img:"files/chaos1.jpg", title:"⚡ CHAOTIC SELF ⚡", text:"Aapko ye khana hai, aur hume aapka :)"},
+    {theme:"chaos", img:"files/chaos2.jpg", title:"", text:"Ye to hume bhi pasand hai"},
+    {theme:"chaos", img:"files/chaos3.jpg", title:"", text:"Aap ke jaisa anokha kaha :)"},
+    {theme:"chaos", img:"files/chaos4.jpg", title:"", text:"Aap meri vanilla ice cream ho"},
+    {theme:"chaos", img:"files/chaos5.jpg", title:"", text:"Tillu ji ki timepass favourites"},
+
+    // ROMANTIC
+    {theme:"romantic", img:"files/romantic1.jpg", title:"🌙 soft side 🌙", text:"this part is quiet"},
+    {theme:"romantic", img:"files/romantic2.jpg", title:"", text:"warm gentle moments"},
+    {theme:"romantic", img:"files/romantic3.jpg", title:"", text:"🎂 happy birthday meri pyaari zaha 🎂"},
+
+    // END PAGE
+    {theme:"romantic", img:"files/romantic4.jpg", title:"🎉 Mwaah. Words cant describe what you mean to me <3 🎉", text:"wishing you lots of love happiness and good health. Always stay smiling, stay chaotic, stay you 💗"}
+];
+
+const body = document.getElementById("body");
+const title = document.getElementById("title");
+const text = document.getElementById("text");
+const image = document.getElementById("image");
+const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+const song1 = document.getElementById("song1");
+const song2 = document.getElementById("song2");
+
+function startMusic() {
+    if (!musicStarted) {
+        song1.volume = 0.5;
+        song1.play();
+        musicStarted = true;
+        document.getElementById("musicBtn").style.display = "none";
+    }
+}
+
+function render() {
+
+    /* FRONT PAGE ONLY */
+    if (index === -1) {
+        body.className = "bts";
+        title.innerText = "hey you 💜";
+        text.innerText = "ek chhota sa surprise hai\nready ho?";
+        image.style.display = "none";
+
+        backBtn.style.display = "none";
+        nextBtn.style.display = "inline-block";
+        return;
+    }
+
+    const p = pages[index];
+    body.className = p.theme;
+    title.innerText = p.title;
+    text.innerText = p.text;
+    image.src = p.img;
+    image.style.display = "block";
+
+    backBtn.style.display = index === 0 ? "none" : "inline-block";
+    nextBtn.style.display = index === pages.length - 1 ? "none" : "inline-block";
+
+    document.querySelectorAll(".confetti").forEach(c => c.remove());
+
+    if (index === pages.length - 1) {
+        for (let i = 0; i < 40; i++) {
+            const c = document.createElement("div");
+            c.className = "confetti";
+            c.style.left = Math.random() * 100 + "vw";
+            c.style.background = ["#ffcad4","#cdb4db","#ffc8dd","#bde0fe"][Math.floor(Math.random()*4)];
+            c.style.animationDuration = 2 + Math.random() * 3 + "s";
+            document.body.appendChild(c);
+        }
+    }
+
+    if (musicStarted) {
+        if (index < 10) {
+            song2.pause();
+            song1.play();
+        } else {
+            song1.pause();
+            song2.volume = 0.5;
+            song2.play();
+        }
+    }
+}
+
+function next() {
+    if (index === -1) {
+        index = 0;
+        render();
+        return;
+    }
+    if (index < pages.length - 1) {
+        index++;
+        render();
+    }
+}
+
+function prev() {
+    if (index > 0) {
+        index--;
+        render();
+    }
+}
+
+render();
+</script>
+
+</body>
+</html>
